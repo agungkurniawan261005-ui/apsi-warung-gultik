@@ -1,0 +1,419 @@
+:root {
+    --warung-bg: #f6f2eb;
+    --warung-surface: #ffffff;
+    --warung-border: #d5cdc2;
+    --warung-text: #111827;
+    --warung-muted: #4b5563;
+    --warung-primary: #7c2d12;
+    --warung-primary-dark: #5c1f0a;
+    --warung-accent-bg: #fff7ed;
+    --warung-green: #15803d;
+    --warung-green-dark: #14532d;
+    --warung-blue: #1d4ed8;
+    --warung-red: #b91c1c;
+    --warung-teal: #0f766e;
+}
+
+body {
+    background-color: var(--warung-bg);
+    color: var(--warung-text);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.tabular-angka {
+    font-variant-numeric: tabular-nums;
+}
+
+.text-primary-warung {
+    color: var(--warung-primary) !important;
+}
+
+/* Header & Navigasi Utama */
+.warung-header {
+    background: linear-gradient(135deg, var(--warung-primary) 0%, #9a3412 100%);
+    border-bottom: 4px solid #f59e0b;
+}
+
+.warung-logo-badge {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, 0.18);
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+}
+
+.warung-subtitle {
+    color: #fef3c7;
+    font-size: 0.95rem;
+}
+
+.warung-date-pill {
+    background-color: rgba(255, 255, 255, 0.16);
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    color: #ffffff;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 1rem;
+    align-self: flex-start;
+}
+
+.warung-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+    gap: 0.65rem;
+}
+
+.warung-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    min-height: 54px;
+    padding: 0.65rem 0.9rem;
+    border-radius: 12px;
+    background-color: rgba(255, 255, 255, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-align: center;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.warung-nav-btn:hover,
+.warung-nav-btn:focus-visible {
+    background-color: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+}
+
+.warung-nav-btn.is-active {
+    background-color: #ffffff;
+    color: var(--warung-primary);
+    border-color: #f59e0b;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Kartu & Alert */
+.warung-card {
+    background-color: var(--warung-surface);
+    border: 2px solid var(--warung-border);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(17, 24, 39, 0.05);
+}
+
+.warung-alert {
+    border-width: 2px;
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+}
+
+/* Form & Tombol Besar */
+.form-control,
+.form-select {
+    border: 2px solid #9ca3af;
+    border-radius: 12px;
+    color: var(--warung-text);
+    font-size: 1.15rem;
+    min-height: 54px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--warung-primary);
+    box-shadow: 0 0 0 0.25rem rgba(124, 45, 18, 0.2);
+}
+
+.btn {
+    border-radius: 12px;
+    font-weight: 700;
+    min-height: 50px;
+}
+
+.btn-lg {
+    min-height: 56px;
+    font-size: 1.15rem;
+    padding: 0.7rem 1.2rem;
+}
+
+.btn-warung-primary {
+    background-color: var(--warung-primary);
+    border-color: var(--warung-primary);
+    color: #ffffff;
+}
+
+.btn-warung-primary:hover,
+.btn-warung-primary:focus {
+    background-color: var(--warung-primary-dark);
+    border-color: var(--warung-primary-dark);
+    color: #ffffff;
+}
+
+.btn-warung-simpan {
+    background-color: var(--warung-green);
+    border-color: var(--warung-green);
+    color: #ffffff;
+    min-height: 66px;
+    font-size: 1.35rem;
+    letter-spacing: 0.01em;
+}
+
+.btn-warung-simpan:hover,
+.btn-warung-simpan:focus {
+    background-color: var(--warung-green-dark);
+    border-color: var(--warung-green-dark);
+    color: #ffffff;
+}
+
+/* Tombol Cepat Porsi */
+.porsi-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.65rem;
+}
+
+.btn-porsi-quick {
+    min-height: 68px;
+    font-size: 1.45rem;
+    font-weight: 800;
+    border: 2px solid #9ca3af;
+    background-color: #ffffff;
+    color: var(--warung-text);
+    border-radius: 14px;
+    transition: all 0.15s ease;
+}
+
+.btn-porsi-quick:hover {
+    border-color: var(--warung-primary);
+    background-color: var(--warung-accent-bg);
+}
+
+.btn-porsi-quick.is-selected {
+    background-color: var(--warung-primary);
+    border-color: var(--warung-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(124, 45, 18, 0.25);
+}
+
+.btn-stepper {
+    min-width: 68px;
+    min-height: 62px;
+    font-size: 1.75rem;
+    font-weight: 800;
+}
+
+.input-porsi-besar {
+    min-height: 62px;
+    font-size: 1.85rem;
+    font-weight: 800;
+    text-align: center;
+}
+
+/* Panel Total Bayar */
+.total-bayar-box {
+    background-color: var(--warung-accent-bg);
+    border: 2px solid #fdba74;
+    border-radius: 16px;
+    padding: 1.2rem 1.4rem;
+}
+
+.total-bayar-angka {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--warung-primary);
+    line-height: 1.1;
+}
+
+/* Kartu Radio Besar (Metode Pembayaran & Kategori) */
+.pilihan-radio-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.pilihan-radio-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 108px;
+    padding: 1rem;
+    border-radius: 16px;
+    border: 3px solid #cbd5e1;
+    background-color: #ffffff;
+    color: var(--warung-text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+
+.pilihan-radio-card:hover {
+    border-color: #64748b;
+    background-color: #f8fafc;
+}
+
+.pilihan-radio-input:focus-visible + .pilihan-radio-card {
+    outline: 4px solid #f59e0b;
+    outline-offset: 2px;
+}
+
+.pilihan-radio-input:checked + .pilihan-radio-card.is-tunai {
+    border-color: var(--warung-green);
+    background-color: #dcfce7;
+    color: #14532d;
+    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.2);
+}
+
+.pilihan-radio-input:checked + .pilihan-radio-card.is-qris {
+    border-color: var(--warung-blue);
+    background-color: #dbeafe;
+    color: #1e3a8a;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
+}
+
+.pilihan-radio-input:checked + .pilihan-radio-card.is-pengeluaran {
+    border-color: var(--warung-red);
+    background-color: #fee2e2;
+    color: #7f1d1d;
+    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.18);
+}
+
+.pilihan-radio-input:checked + .pilihan-radio-card.is-pemasukan {
+    border-color: var(--warung-teal);
+    background-color: #ccfbf1;
+    color: #134e4a;
+    box-shadow: 0 4px 12px rgba(15, 118, 110, 0.18);
+}
+
+.pilihan-radio-card.is-compact {
+    min-height: 76px;
+}
+
+/* Tombol Tab Kas (Pengeluaran vs Pemasukan Tambahan) */
+.kas-tab-btn {
+    min-height: 68px;
+    border-radius: 16px;
+    border: 3px solid var(--warung-border);
+    background-color: #ffffff;
+    color: var(--warung-text);
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    padding: 0.85rem 1rem;
+}
+
+.kas-tab-btn.is-pengeluaran-active {
+    background-color: var(--warung-red);
+    border-color: var(--warung-red);
+    color: #ffffff;
+}
+
+.kas-tab-btn.is-pemasukan-active {
+    background-color: var(--warung-teal);
+    border-color: var(--warung-teal);
+    color: #ffffff;
+}
+
+/* Tombol Cepat Nominal & Keterangan */
+.btn-nominal-quick {
+    min-height: 50px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border: 2px solid #9ca3af;
+    background-color: #ffffff;
+    color: var(--warung-text);
+}
+
+.btn-nominal-quick:hover {
+    background-color: #f3f4f6;
+    border-color: #374151;
+}
+
+.btn-chip-keterangan {
+    min-height: 42px;
+    font-size: 0.98rem;
+    font-weight: 600;
+    border-radius: 999px;
+}
+
+/* Kartu Ringkasan & Tabel */
+.stat-card-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.15;
+}
+
+.table-warung th {
+    background-color: #f3efe8;
+    color: var(--warung-text);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 0.9rem 0.85rem;
+    white-space: nowrap;
+}
+
+.table-warung td {
+    padding: 0.9rem 0.85rem;
+    vertical-align: middle;
+    font-size: 1.05rem;
+}
+
+.badge-metode {
+    font-size: 0.98rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-weight: 700;
+}
+
+.badge-tunai {
+    background-color: #dcfce7;
+    color: #14532d;
+    border: 1.5px solid #16a34a;
+}
+
+.badge-qris {
+    background-color: #dbeafe;
+    color: #1e3a8a;
+    border: 1.5px solid #2563eb;
+}
+
+.empty-state-box {
+    border: 2px dashed #9ca3af;
+    border-radius: 16px;
+    background-color: #faf8f5;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+}
+
+@media (max-width: 575.98px) {
+    .warung-nav-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .warung-nav-grid > :first-child {
+        grid-column: 1 / -1;
+    }
+
+    .porsi-quick-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .total-bayar-angka,
+    .stat-card-value {
+        font-size: 1.75rem;
+    }
+}
