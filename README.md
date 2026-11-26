@@ -1,59 +1,129 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistem Pencatatan Penjualan dan Keuangan Warung Gultik Nusantara
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web pencatatan transaksi penjualan, metode pembayaran (Tunai & QRIS), serta arus kas (pemasukan dan pengeluaran) yang dirancang khusus dengan antarmuka sederhana dan minim pengetikan untuk pemilik Warung Gultik Nusantara (Pak Yusda)[cite: 6].
 
-## About Laravel
+**Mata Kuliah:** Analisis Perancangan Sistem Informasi (APSI) — Kelompok 1 (STT Terpadu Nurul Fikri)[cite: 8]  
+**Anggota Kelompok:**
+- Inayah Safitri (0110125028)
+- Nazla Nabila Hidayat Lubis (0110125152)
+- Agung Kurniawan (0110125049)
+- Khalid Alghifari (0110125004)[cite: 8]
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Fitur Utama
+1. **Catat Penjualan (UC-01):** Pencatatan transaksi penjualan berbasis jumlah porsi dengan kalkulasi total otomatis[cite: 12].
+2. **Catat Metode Pembayaran (UC-02):** Pemisahan metode pembayaran antara **Tunai** dan **QRIS** untuk setiap transaksi[cite: 11, 12].
+3. **Catat Pemasukan & Pengeluaran (UC-03):** Pencatatan pengeluaran operasional manual dan pemasukan tambahan di luar penjualan (pendapatan penjualan otomatis terakumulasi tanpa input ulang)[cite: 6, 9].
+4. **Lihat Rekap Penjualan (UC-04):** Ringkasan total porsi terjual, omzet, serta rincian Tunai vs QRIS[cite: 6, 12].
+5. **Lihat Informasi Pemasukan dan Pengeluaran (UC-05):** Laporan arus kas dan saldo bersih usaha dilengkapi filter periode tanggal[cite: 6, 11].
+6. **Lihat Riwayat Penjualan (UC-06):** Daftar riwayat transaksi penjualan yang telah tersimpan[cite: 11].
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Prasyarat Software di Laptop
+Sebelum menjalankan proyek ini, pastikan perangkat sudah terinstal:
+- **XAMPP** (PHP >= 8.2 dan MariaDB/MySQL)
+- **Composer**
+- **Git**
+- **MySQL Workbench** (atau phpMyAdmin)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Panduan Menjalankan Proyek (Dari Awal Buka Laptop)
 
-## Laravel Sponsors
+### 1. Nyalakan Server Lokal (XAMPP)
+1. Buka aplikasi **XAMPP Control Panel**.
+2. Klik tombol **Start** pada modul **Apache** dan **MySQL** hingga keduanya berwarna hijau.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 2. Buat Database Kosong
+1. Buka **MySQL Workbench** (atau buka `http://localhost/phpmyadmin` di browser).
+2. Buat *schema* / database baru dengan nama:
+   ```sql
+   db_gultik_nusantara
 
-### Premium Partners
+   3. Download Proyek dari GitHub (Clone)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+    Buka Command Prompt (CMD) atau PowerShell.
 
-## Contributing
+    Masuk ke folder htdocs XAMPP:
+    Bash
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    cd C:\xampp\htdocs
 
-## Code of Conduct
+    Unduh repositori proyek ini (ganti <URL-REPO-GITHUB> dengan link repositori kelompok):
+    Bash
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    git clone https://github.com/agungkurniawan261005-ui/apsi-warung-gultik
 
-## Security Vulnerabilities
+    Masuk ke folder proyek:
+    Bash
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    cd warung-gultik
 
-## License
+4. Instal Dependensi & Konfigurasi Environment
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Jalankan perintah berikut secara berurutan di terminal:
+
+    Instal paket Laravel (vendor):
+    Bash
+
+    composer install
+
+    Salin file contoh konfigurasi menjadi .env:
+    Bash
+
+    copy .env.example .env
+
+    Generate kunci keamanan aplikasi:
+    Bash
+
+    php artisan key:generate
+
+    Buka file .env menggunakan VS Code / Antigravity IDE / Notepad, lalu sesuaikan bagian database agar terhubung ke MySQL XAMPP:
+    Cuplikan kode
+
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=db_gultik_nusantara
+    DB_USERNAME=root
+    DB_PASSWORD=
+
+    (Simpan file .env dengan menekan Ctrl + S).
+
+5. Buat Tabel Database (Migrasi)
+
+Jalankan perintah migrasi agar tabel penjualans, pemasukans, dan pengeluarans otomatis dibuat di database:
+Bash
+
+php artisan migrate
+
+(Jika tersedia data contoh/seeder, jalankan php artisan migrate --seed).
+6. Jalankan Aplikasi di Browser
+
+    Jalankan server pengembangan Laravel:
+    Bash
+
+    php artisan serve
+
+    Buka browser (Chrome/Edge) dan akses alamat:
+    Plaintext
+
+    [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+Alur Kolaborasi Git untuk Anggota Kelompok
+
+Setiap kali akan mulai mengerjakan atau mengedit kode baru, biasakan menjalankan langkah berikut agar kode selalu sinkron:
+
+    Ambil pembaruan terbaru dari GitHub sebelum ngoding:
+    Bash
+
+    git pull origin main
+
+    Simpan & unggah perubahan setelah selesai mengedit:
+    Bash
+
+    git add .
+    git commit -m "Deskripsi perubahan yang dikerjakan"
+    git push origin main
