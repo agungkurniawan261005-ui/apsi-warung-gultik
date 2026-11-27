@@ -11,15 +11,19 @@ class PenjualanTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_halaman_catat_penjualan_dapat_dibuka(): void
+    public function test_halaman_catat_penjualan_dapat_dibuka_dengan_navigasi_empat_menu(): void
     {
         $response = $this->get(route('penjualan.create'));
 
         $response->assertStatus(200);
         $response->assertSee('Warung Gultik Nusantara');
-        $response->assertSee('Catat Penjualan Baru');
+        $response->assertSee('Catat Penjualan');
         $response->assertSee('TUNAI');
         $response->assertSee('QRIS');
+        $response->assertSee('Jualan');
+        $response->assertSee('Catat Kas');
+        $response->assertSee('Rekap');
+        $response->assertSee('Riwayat');
     }
 
     public function test_uc01_dan_uc02_simpan_penjualan_menghitung_total_harga_otomatis(): void
@@ -117,8 +121,9 @@ class PenjualanTest extends TestCase
 
         $this->get(route('penjualan.index', ['metode' => 'QRIS']))
             ->assertStatus(200)
-            ->assertSee('Rp 60.000')
-            ->assertDontSee('Rp 30.000');
+            ->assertSee('4 Porsi')
+            ->assertDontSee('2 Porsi')
+            ->assertViewHas('penjualans', fn ($items) => $items->count() === 1 && $items->first()->id === $qris->id);
 
         $this->put(route('penjualan.update', $tunai), [
             'jumlah_porsi' => 5,

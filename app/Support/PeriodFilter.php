@@ -6,15 +6,16 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 /**
- * Menormalkan pilihan periode filter tanggal untuk halaman rekap dan laporan.
+ * Menormalkan pilihan periode filter tanggal untuk halaman rekap dan riwayat.
  */
 class PeriodFilter
 {
     public const PRESET_LABELS = [
         'hari_ini' => 'Hari Ini',
+        'semua' => 'Semua Waktu',
+        'pilih_tanggal' => 'Pilih Tanggal',
         'minggu_ini' => '7 Hari Terakhir',
         'bulan_ini' => 'Bulan Ini',
-        'semua' => 'Semua Data',
         'kustom' => 'Rentang Tanggal',
     ];
 
@@ -27,15 +28,18 @@ class PeriodFilter
     }
 
     /**
-     * Membaca parameter periode/tanggal dari HTTP request dengan default Hari Ini.
+     * Membaca parameter periode/tanggal dari HTTP request.
      */
     public static function fromRequest(Request $request, string $defaultPeriode = 'hari_ini'): self
     {
         $periode = (string) $request->query('periode', '');
+        $rawTanggal = $request->query('tanggal');
         $rawMulai = $request->query('tanggal_mulai');
         $rawSelesai = $request->query('tanggal_selesai');
 
-        if ($periode === '' && ($rawMulai || $rawSelesai)) {
+        if ($periode === '' && $rawTanggal) {
+            $periode = 'pilih_tanggal';
+        } elseif ($periode === '' && ($rawMulai || $rawSelesai)) {
             $periode = 'kustom';
         }
 
@@ -50,7 +54,27 @@ class PeriodFilter
                 periode: 'hari_ini',
                 tanggalMulai: $today->copy(),
                 tanggalSelesai: $today->copy(),
-                label: 'Hari Ini (' . $today->translatedFormat('d M Y') . ')',
+                label: 'Hari Ini',
+            );
+        }
+
+        if ($periode === 'semua') {
+            return new self(
+                periode: 'semua',
+                tanggalMulai: null,
+                tanggalSelesai: null,
+                label: 'Semua Waktu',
+            );
+        }
+
+        if ($periode === 'pilih_tanggal') {
+            $tanggal = self::parseDate($rawTanggal) ?? $today->copy();
+
+            return new self(
+                periode: 'pilih_tanggal',
+                tanggalMulai: $tanggal->copy(),
+                tanggalSelesai: $tanggal->copy(),
+                label: 'Tanggal ' . $tanggal->translatedFormat('d M Y'),
             );
         }
 
@@ -77,15 +101,6 @@ class PeriodFilter
             );
         }
 
-        if ($periode === 'semua') {
-            return new self(
-                periode: 'semua',
-                tanggalMulai: null,
-                tanggalSelesai: null,
-                label: 'Semua Data Tercatat',
-            );
-        }
-
         $mulai = self::parseDate($rawMulai);
         $selesai = self::parseDate($rawSelesai);
 
@@ -98,7 +113,7 @@ class PeriodFilter
                 periode: 'hari_ini',
                 tanggalMulai: $today->copy(),
                 tanggalSelesai: $today->copy(),
-                label: 'Hari Ini (' . $today->translatedFormat('d M Y') . ')',
+                label: 'Hari Ini',
             );
         }
 
@@ -116,6 +131,11 @@ class PeriodFilter
             tanggalSelesai: $selesai,
             label: implode(' ', $labelParts),
         );
+    }
+
+    public function inputTanggal(): string
+    {
+        return ($this->tanggalMulai ?? Carbon::today())->toDateString();
     }
 
     public function inputMulai(): string

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePemasukanRequest;
 use App\Models\Pemasukan;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PemasukanController extends BaseKasController
@@ -24,9 +25,9 @@ class PemasukanController extends BaseKasController
         return $this->perbaruiData($request, $pemasukan);
     }
 
-    public function destroy(Pemasukan $pemasukan): RedirectResponse
+    public function destroy(Request $request, Pemasukan $pemasukan): RedirectResponse
     {
-        return $this->hapusData($pemasukan);
+        return $this->hapusData($request, $pemasukan);
     }
 
     protected function modelClass(): string
@@ -37,11 +38,6 @@ class PemasukanController extends BaseKasController
     protected function routePrefix(): string
     {
         return 'pemasukan';
-    }
-
-    protected function indexView(): string
-    {
-        return 'kas.pemasukan';
     }
 
     protected function kategoriConfigKey(): string

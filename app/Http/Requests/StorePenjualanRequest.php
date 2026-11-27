@@ -19,12 +19,23 @@ class StorePenjualanRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $hargaSatuan = $this->input('harga_satuan');
+        $metode = $this->input('metode_pembayaran');
+
+        if (is_string($metode)) {
+            $trimmed = trim($metode);
+            $metode = match (strtoupper($trimmed)) {
+                'TUNAI' => 'Tunai',
+                'QRIS' => 'QRIS',
+                default => $trimmed,
+            };
+        }
 
         $this->merge([
             'jumlah_porsi' => FormatUang::normalisasiInputAngka($this->input('jumlah_porsi')),
             'harga_satuan' => ($hargaSatuan === null || trim((string) $hargaSatuan) === '')
                 ? null
                 : FormatUang::normalisasiInputAngka($hargaSatuan),
+            'metode_pembayaran' => $metode,
         ]);
     }
 

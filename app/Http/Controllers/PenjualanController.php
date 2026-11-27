@@ -15,25 +15,15 @@ use Illuminate\View\View;
 class PenjualanController extends Controller
 {
     /**
-     * Halaman utama: Catat Penjualan & Metode Pembayaran (UC-01 & UC-02).
+     * Halaman utama (Menu 1: Jualan): Catat Penjualan & Metode Pembayaran (UC-01 & UC-02).
      */
     public function create(): View
     {
-        $today = Carbon::today();
-        $ringkasanHariIni = Penjualan::hitungRekap($today, $today);
-        $penjualanTerbaru = Penjualan::query()
-            ->dalamRentangTanggal($today, $today)
-            ->orderByDesc('waktu_transaksi')
-            ->orderByDesc('id')
-            ->limit(5)
-            ->get();
-
         return view('penjualan.create', [
-            'hargaDefault' => config('warung.harga_porsi_default'),
+            'hargaDefault' => (int) session('harga_porsi_aktif', config('warung.harga_porsi_default')),
             'presetPorsi' => config('warung.preset_porsi'),
+            'presetHarga' => config('warung.preset_harga'),
             'metodePembayaran' => config('warung.metode_pembayaran'),
-            'ringkasanHariIni' => $ringkasanHariIni,
-            'penjualanTerbaru' => $penjualanTerbaru,
         ]);
     }
 
@@ -44,8 +34,12 @@ class PenjualanController extends Controller
     {
         $validated = $request->validated();
         $jumlahPorsi = (int) $validated['jumlah_porsi'];
-        $hargaSatuan = (int) ($validated['harga_satuan'] ?? config('warung.harga_porsi_default'));
+        $hargaSatuan = (int) ($validated['harga_satuan'] ?? session('harga_porsi_aktif', config('warung.harga_porsi_default')));
         $totalHarga = $jumlahPorsi * $hargaSatuan;
+
+        if (! empty($validated['harga_satuan'])) {
+            session(['harga_porsi_aktif' => $hargaSatuan]);
+        }
 
         $penjualan = Penjualan::create([
             'jumlah_porsi' => $jumlahPorsi,
@@ -55,16 +49,19 @@ class PenjualanController extends Controller
             'waktu_transaksi' => now(),
         ]);
 
+        $metodeLabel = $penjualan->metode_pembayaran === 'Tunai' ? 'TUNAI' : 'QRIS';
+
         return redirect()
             ->route('penjualan.create')
+            ->with('form_feedback', true)
             ->with(
                 'success',
-                "Penjualan {$penjualan->jumlah_porsi} porsi (" . FormatUang::rupiah($penjualan->total_harga) . " - {$penjualan->metode_pembayaran}) berhasil dicatat!"
+                "Transaksi berhasil — {$penjualan->jumlah_porsi} porsi (" . FormatUang::rupiah($penjualan->total_harga) . " · {$metodeLabel}) sudah dicatat."
             );
     }
 
     /**
-     * Riwayat Penjualan beserta filter periode & metode pembayaran (UC-06).
+     * Menu 4: Riwayat Penjualan beserta filter Hari Ini / Semua / Metode (UC-06).
      */
     public function index(Request $request): View
     {
@@ -88,6 +85,7 @@ class PenjualanController extends Controller
 
         return view('penjualan.index', [
             'penjualans' => $penjualans,
+            'totalSemuaTransaksi' => Penjualan::query()->count(),
             'filter' => $filter,
             'metodeAktif' => $metode,
             'metodeList' => $metodeList,

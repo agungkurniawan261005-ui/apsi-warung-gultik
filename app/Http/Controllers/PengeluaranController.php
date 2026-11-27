@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePengeluaranRequest;
 use App\Models\Pengeluaran;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class PengeluaranController extends BaseKasController
@@ -24,9 +25,9 @@ class PengeluaranController extends BaseKasController
         return $this->perbaruiData($request, $pengeluaran);
     }
 
-    public function destroy(Pengeluaran $pengeluaran): RedirectResponse
+    public function destroy(Request $request, Pengeluaran $pengeluaran): RedirectResponse
     {
-        return $this->hapusData($pengeluaran);
+        return $this->hapusData($request, $pengeluaran);
     }
 
     protected function modelClass(): string
@@ -37,11 +38,6 @@ class PengeluaranController extends BaseKasController
     protected function routePrefix(): string
     {
         return 'pengeluaran';
-    }
-
-    protected function indexView(): string
-    {
-        return 'kas.pengeluaran';
     }
 
     protected function kategoriConfigKey(): string

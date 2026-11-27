@@ -12,26 +12,12 @@ use Illuminate\View\View;
 class LaporanController extends Controller
 {
     /**
-     * UC-04: Rekap Penjualan (Total porsi, omzet, pemisahan Tunai dan QRIS).
+     * Menu 3: Halaman gabungan Rekap Penjualan (UC-04) & Informasi Pemasukan/Pengeluaran (UC-05).
      */
-    public function rekapPenjualan(Request $request): View
+    public function rekap(Request $request): View
     {
         $filter = PeriodFilter::fromRequest($request, 'hari_ini');
         $rekap = Penjualan::hitungRekap($filter->tanggalMulai, $filter->tanggalSelesai);
-
-        return view('laporan.rekap-penjualan', [
-            'filter' => $filter,
-            'rekap' => $rekap,
-        ]);
-    }
-
-    /**
-     * UC-05: Informasi Pemasukan & Pengeluaran Gabungan tanpa double counting.
-     */
-    public function keuangan(Request $request): View
-    {
-        $filter = PeriodFilter::fromRequest($request, 'hari_ini');
-        $rekapPenjualan = Penjualan::hitungRekap($filter->tanggalMulai, $filter->tanggalSelesai);
 
         $pemasukanList = Pemasukan::query()
             ->dalamPeriode($filter)
@@ -45,37 +31,42 @@ class LaporanController extends Controller
             ->orderByDesc('id')
             ->get();
 
-        $totalPenjualan = $rekapPenjualan['total_omzet'];
+        $totalPenjualan = $rekap['total_omzet'];
         $totalPemasukanLain = (int) $pemasukanList->sum('nominal');
         $totalPengeluaran = (int) $pengeluaranList->sum('nominal');
-        $totalUangMasuk = $totalPenjualan + $totalPemasukanLain;
-        $saldoBersih = $totalUangMasuk - $totalPengeluaran;
+        $saldoBersih = $totalPenjualan + $totalPemasukanLain - $totalPengeluaran;
 
-        $pemasukanPerKategori = $pemasukanList
-            ->groupBy('kategori')
-            ->map(fn ($items) => (int) $items->sum('nominal'));
+        $persenTunai = $totalPenjualan > 0
+            ? (int) round(($rekap['tunai_omzet'] / $totalPenjualan) * 100)
+            : 0;
+        $persenQris = $totalPenjualan > 0 ? 100 - $persenTunai : 0;
 
-        $pengeluaranPerKategori = $pengeluaranList
-            ->groupBy('kategori')
-            ->map(fn ($items) => (int) $items->sum('nominal'));
-
-        $isKosong = $rekapPenjualan['total_transaksi'] === 0
+        $isKosong = $rekap['total_transaksi'] === 0
             && $pemasukanList->isEmpty()
             && $pengeluaranList->isEmpty();
 
-        return view('laporan.keuangan', [
+        return view('laporan.rekap', [
             'filter' => $filter,
-            'rekapPenjualan' => $rekapPenjualan,
+            'rekap' => $rekap,
+            'persenTunai' => $persenTunai,
+            'persenQris' => $persenQris,
             'pemasukanList' => $pemasukanList,
             'pengeluaranList' => $pengeluaranList,
-            'pemasukanPerKategori' => $pemasukanPerKategori,
-            'pengeluaranPerKategori' => $pengeluaranPerKategori,
             'totalPenjualan' => $totalPenjualan,
             'totalPemasukanLain' => $totalPemasukanLain,
-            'totalUangMasuk' => $totalUangMasuk,
             'totalPengeluaran' => $totalPengeluaran,
             'saldoBersih' => $saldoBersih,
             'isKosong' => $isKosong,
         ]);
+    }
+
+    public function rekapPenjualan(Request $request): View
+    {
+        return $this->rekap($request);
+    }
+
+    public function keuangan(Request $request): View
+    {
+        return $this->rekap($request);
     }
 }

@@ -9,6 +9,21 @@ class StorePemasukanRequest extends BaseKasRequest
         return config('warung.kategori_pemasukan');
     }
 
+    protected function defaultKeterangan(): string
+    {
+        return 'Pemasukan tambahan';
+    }
+
+    protected function inferKategori(string $keterangan): string
+    {
+        $teks = mb_strtolower($keterangan);
+        if (str_contains($teks, 'modal') || str_contains($teks, 'kembalian')) {
+            return 'Tambahan Modal';
+        }
+
+        return 'Pendapatan Lain-lain';
+    }
+
     protected function categoryRequiredMessage(): string
     {
         return 'Pilih kategori pemasukan';

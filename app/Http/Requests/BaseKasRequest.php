@@ -18,9 +18,19 @@ abstract class BaseKasRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $rawKeterangan = is_string($this->input('keterangan'))
+            ? trim($this->input('keterangan'))
+            : '';
+
+        $keteranganFinal = $rawKeterangan !== '' ? $rawKeterangan : $this->defaultKeterangan();
+        $kategoriInput = $this->input('kategori');
+
         $this->merge([
             'nominal' => FormatUang::normalisasiInputAngka($this->input('nominal')),
-            'keterangan' => is_string($this->input('keterangan')) ? trim($this->input('keterangan')) : $this->input('keterangan'),
+            'keterangan' => $keteranganFinal,
+            'kategori' => ($kategoriInput === null || trim((string) $kategoriInput) === '')
+                ? $this->inferKategori($rawKeterangan)
+                : $kategoriInput,
             'tanggal' => $this->input('tanggal') ?: now()->toDateString(),
         ]);
     }
@@ -53,6 +63,10 @@ abstract class BaseKasRequest extends FormRequest
      * @return array<int, string>
      */
     abstract protected function allowedCategories(): array;
+
+    abstract protected function defaultKeterangan(): string;
+
+    abstract protected function inferKategori(string $keterangan): string;
 
     abstract protected function categoryRequiredMessage(): string;
 

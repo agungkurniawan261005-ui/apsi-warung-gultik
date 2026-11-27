@@ -11,34 +11,41 @@ class KasTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_halaman_catat_kas_dapat_dibuka(): void
+    {
+        $this->get(route('kas.index'))
+            ->assertStatus(200)
+            ->assertSee('Catat Pemasukan Lain & Pengeluaran')
+            ->assertSee('Pengeluaran Operasional')
+            ->assertSee('Pemasukan Tambahan (Non-Penjualan)');
+    }
+
     public function test_uc03_simpan_ubah_dan_hapus_pengeluaran(): void
     {
         $response = $this->post(route('pengeluaran.store'), [
-            'kategori' => 'Belanja Bahan',
             'nominal' => '150.000',
-            'keterangan' => 'Daging Sapi 1 kg',
-            'tanggal' => now()->toDateString(),
+            'keterangan' => 'Gas elpiji 3 kg',
         ]);
 
         $response->assertRedirect(route('pengeluaran.index'));
         $this->assertDatabaseHas('pengeluarans', [
-            'kategori' => 'Belanja Bahan',
+            'kategori' => 'Operasional/Gas',
             'nominal' => 150000,
-            'keterangan' => 'Daging Sapi 1 kg',
+            'keterangan' => 'Gas elpiji 3 kg',
         ]);
 
         $pengeluaran = Pengeluaran::firstOrFail();
 
         $this->put(route('pengeluaran.update', $pengeluaran), [
-            'kategori' => 'Operasional/Gas',
+            'kategori' => 'Belanja Bahan',
             'nominal' => 25000,
-            'keterangan' => 'Gas LPG 3kg',
+            'keterangan' => 'Beras & santan',
             'tanggal' => now()->toDateString(),
         ])->assertRedirect(route('pengeluaran.index'));
 
         $this->assertDatabaseHas('pengeluarans', [
             'id' => $pengeluaran->id,
-            'kategori' => 'Operasional/Gas',
+            'kategori' => 'Belanja Bahan',
             'nominal' => 25000,
         ]);
 
@@ -51,10 +58,8 @@ class KasTest extends TestCase
     public function test_uc03_simpan_ubah_dan_hapus_pemasukan_non_penjualan(): void
     {
         $response = $this->post(route('pemasukan.store'), [
-            'kategori' => 'Tambahan Modal',
             'nominal' => 500000,
-            'keterangan' => 'Modal awal warung',
-            'tanggal' => now()->toDateString(),
+            'keterangan' => 'Uang kembalian / modal',
         ]);
 
         $response->assertRedirect(route('pemasukan.index'));
@@ -68,7 +73,7 @@ class KasTest extends TestCase
         $this->put(route('pemasukan.update', $pemasukan), [
             'kategori' => 'Pendapatan Lain-lain',
             'nominal' => 100000,
-            'keterangan' => 'Penjualan kerupuk tambahan',
+            'keterangan' => 'Titipan minuman',
             'tanggal' => now()->toDateString(),
         ])->assertRedirect(route('pemasukan.index'));
 
@@ -78,26 +83,23 @@ class KasTest extends TestCase
             'nominal' => 100000,
         ]);
 
-        $this->delete(route('pemasukan.destroy', $pemasukan))
-            ->assertRedirect(route('pemasukan.index'));
+        $this->delete(route('pemasukan.destroy', $pemasukan), ['kembali_ke' => 'rekap'])
+            ->assertRedirect(route('laporan.rekap'));
 
         $this->assertDatabaseMissing('pemasukans', ['id' => $pemasukan->id]);
     }
 
     public function test_validasi_wajib_nominal_tidak_valid_pada_pemasukan_dan_pengeluaran(): void
     {
-        $this->from(route('pengeluaran.index'))->post(route('pengeluaran.store'), [
-            'kategori' => 'Belanja Bahan',
+        $this->from(route('kas.index'))->post(route('pengeluaran.store'), [
             'nominal' => '',
         ])->assertSessionHasErrors(['nominal' => 'Nominal tidak valid']);
 
-        $this->from(route('pengeluaran.index'))->post(route('pengeluaran.store'), [
-            'kategori' => 'Belanja Bahan',
+        $this->from(route('kas.index'))->post(route('pengeluaran.store'), [
             'nominal' => 0,
         ])->assertSessionHasErrors(['nominal' => 'Nominal tidak valid']);
 
-        $this->from(route('pemasukan.index'))->post(route('pemasukan.store'), [
-            'kategori' => 'Tambahan Modal',
+        $this->from(route('kas.index'))->post(route('pemasukan.store'), [
             'nominal' => -10000,
         ])->assertSessionHasErrors(['nominal' => 'Nominal tidak valid']);
     }

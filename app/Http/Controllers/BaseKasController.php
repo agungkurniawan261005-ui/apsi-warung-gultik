@@ -6,6 +6,7 @@ use App\Http\Requests\BaseKasRequest;
 use App\Support\FormatUang;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
@@ -13,25 +14,22 @@ use Illuminate\View\View;
  */
 abstract class BaseKasController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $modelClass = $this->modelClass();
-        $riwayat = $modelClass::query()
-            ->orderByDesc('tanggal')
-            ->orderByDesc('id')
-            ->paginate(10);
+        return self::renderKasPage($this->routePrefix());
+    }
 
-        $totalHariIni = (int) $modelClass::query()
-            ->whereDate('tanggal', now()->toDateString())
-            ->sum('nominal');
+    public static function renderKasPage(string $jenisAktif = 'pengeluaran'): View
+    {
+        $jenisAktif = $jenisAktif === 'pemasukan' ? 'pemasukan' : 'pengeluaran';
 
-        return view($this->indexView(), [
-            'riwayat' => $riwayat,
-            'totalHariIni' => $totalHariIni,
-            'kategoriList' => config($this->kategoriConfigKey()),
+        return view('kas.index', [
+            'jenisAktif' => $jenisAktif,
             'presetNominal' => config('warung.preset_nominal'),
-            'presetKeterangan' => config($this->keteranganPresetConfigKey()),
-            'tabAktif' => $this->routePrefix(),
+            'presetKeteranganPengeluaran' => config('warung.preset_keterangan_pengeluaran'),
+            'presetKeteranganPemasukan' => config('warung.preset_keterangan_pemasukan'),
+            'kategoriPengeluaran' => config('warung.kategori_pengeluaran'),
+            'kategoriPemasukan' => config('warung.kategori_pemasukan'),
         ]);
     }
 
@@ -39,12 +37,14 @@ abstract class BaseKasController extends Controller
     {
         $modelClass = $this->modelClass();
         $record = $modelClass::create($request->validated());
+        $label = $this->routePrefix() === 'pengeluaran' ? 'Pengeluaran' : 'Pemasukan tambahan';
 
         return redirect()
             ->route($this->routePrefix() . '.index')
+            ->with('form_feedback', true)
             ->with(
                 'success',
-                $this->jenisLabel() . ' (' . $record->kategori . ') sebesar ' . FormatUang::rupiah($record->nominal) . ' berhasil dicatat!'
+                "{$label} sebesar " . FormatUang::rupiah($record->nominal) . ' berhasil disimpan.'
             );
     }
 
@@ -55,7 +55,7 @@ abstract class BaseKasController extends Controller
             'jenis' => $this->routePrefix(),
             'jenisLabel' => $this->jenisLabel(),
             'routeUpdate' => route($this->routePrefix() . '.update', $record),
-            'routeBatal' => route($this->routePrefix() . '.index'),
+            'routeBatal' => route('laporan.rekap'),
             'kategoriList' => config($this->kategoriConfigKey()),
             'presetNominal' => config('warung.preset_nominal'),
             'presetKeterangan' => config($this->keteranganPresetConfigKey()),
@@ -71,13 +71,23 @@ abstract class BaseKasController extends Controller
             ->with('success', 'Catatan ' . strtolower($this->jenisLabel()) . ' berhasil diperbarui.');
     }
 
-    protected function hapusData(Model $record): RedirectResponse
+    protected function hapusData(Request $request, Model $record): RedirectResponse
     {
         $record->delete();
+        $pesan = 'Catatan ' . strtolower($this->jenisLabel()) . ' berhasil dihapus.';
+
+        if ($request->input('kembali_ke') === 'rekap') {
+            return redirect()
+                ->route('laporan.rekap', array_filter([
+                    'periode' => $request->input('periode'),
+                    'tanggal' => $request->input('tanggal'),
+                ]))
+                ->with('success', $pesan);
+        }
 
         return redirect()
             ->route($this->routePrefix() . '.index')
-            ->with('success', 'Catatan ' . strtolower($this->jenisLabel()) . ' berhasil dihapus.');
+            ->with('success', $pesan);
     }
 
     /**
@@ -86,8 +96,6 @@ abstract class BaseKasController extends Controller
     abstract protected function modelClass(): string;
 
     abstract protected function routePrefix(): string;
-
-    abstract protected function indexView(): string;
 
     abstract protected function kategoriConfigKey(): string;
 

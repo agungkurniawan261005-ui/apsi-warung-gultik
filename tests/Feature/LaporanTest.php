@@ -15,6 +15,10 @@ class LaporanTest extends TestCase
 
     public function test_uc04_dan_uc05_menampilkan_data_belum_tersedia_saat_kosong(): void
     {
+        $this->get(route('laporan.rekap'))
+            ->assertStatus(200)
+            ->assertSee('Data belum tersedia');
+
         $this->get(route('laporan.rekap-penjualan'))
             ->assertStatus(200)
             ->assertSee('Data belum tersedia');
@@ -42,7 +46,6 @@ class LaporanTest extends TestCase
             'waktu_transaksi' => Carbon::now(),
         ]);
 
-        // Data bulan lalu tidak ikut hitungan filter default Hari Ini
         Penjualan::create([
             'jumlah_porsi' => 10,
             'harga_satuan' => 15000,
@@ -51,14 +54,14 @@ class LaporanTest extends TestCase
             'waktu_transaksi' => Carbon::now()->subDays(40),
         ]);
 
-        $responseHariIni = $this->get(route('laporan.rekap-penjualan'));
+        $responseHariIni = $this->get(route('laporan.rekap'));
         $responseHariIni->assertStatus(200);
         $responseHariIni->assertSee('5 Porsi');
         $responseHariIni->assertSee('Rp 75.000');
         $responseHariIni->assertSee('Rp 45.000');
         $responseHariIni->assertSee('Rp 30.000');
 
-        $responseSemua = $this->get(route('laporan.rekap-penjualan', ['periode' => 'semua']));
+        $responseSemua = $this->get(route('laporan.rekap', ['periode' => 'semua']));
         $responseSemua->assertStatus(200);
         $responseSemua->assertSee('15 Porsi');
         $responseSemua->assertSee('Rp 225.000');
@@ -91,7 +94,6 @@ class LaporanTest extends TestCase
             'tanggal' => $hariIni->toDateString(),
         ]);
 
-        // Data di luar rentang Hari Ini
         Penjualan::create([
             'jumlah_porsi' => 5,
             'harga_satuan' => 15000,
@@ -100,22 +102,36 @@ class LaporanTest extends TestCase
             'waktu_transaksi' => $kemarinLusa->copy()->setHour(19),
         ]);
 
-        $response = $this->get(route('laporan.keuangan'));
+        $response = $this->get(route('laporan.rekap'));
         $response->assertStatus(200);
-        // 60.000 (penjualan) + 200.000 (pemasukan non-penjualan) - 100.000 (pengeluaran) = 160.000
         $response->assertSee('Rp 60.000');
         $response->assertSee('Rp 200.000');
         $response->assertSee('Rp 100.000');
         $response->assertSee('Rp 160.000');
 
-        // Cek filter rentang tanggal kustom untuk hari kemarin lusa saja
-        $responseKustom = $this->get(route('laporan.keuangan', [
-            'periode' => 'kustom',
-            'tanggal_mulai' => $kemarinLusa->toDateString(),
-            'tanggal_selesai' => $kemarinLusa->toDateString(),
+        $responsePilihTanggal = $this->get(route('laporan.rekap', [
+            'periode' => 'pilih_tanggal',
+            'tanggal' => $kemarinLusa->toDateString(),
         ]));
-        $responseKustom->assertStatus(200);
-        $responseKustom->assertSee('Rp 75.000');
-        $responseKustom->assertDontSee('Modal kasir');
+        $responsePilihTanggal->assertStatus(200);
+        $responsePilihTanggal->assertSee('Rp 75.000');
+        $responsePilihTanggal->assertDontSee('Modal kasir');
+    }
+
+    public function test_isi_data_contoh_dan_reset_data(): void
+    {
+        $this->from(route('penjualan.create'))->post(route('data.contoh'))
+            ->assertRedirect(route('penjualan.create'));
+
+        $this->assertDatabaseCount('penjualans', 5);
+        $this->assertDatabaseCount('pemasukans', 2);
+        $this->assertDatabaseCount('pengeluarans', 3);
+
+        $this->from(route('penjualan.create'))->delete(route('data.reset'))
+            ->assertRedirect(route('penjualan.create'));
+
+        $this->assertDatabaseCount('penjualans', 0);
+        $this->assertDatabaseCount('pemasukans', 0);
+        $this->assertDatabaseCount('pengeluarans', 0);
     }
 }

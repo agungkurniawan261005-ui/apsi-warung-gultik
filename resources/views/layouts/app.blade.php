@@ -5,106 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Sistem Pencatatan Warung Gultik Nusantara')</title>
 
+    {{-- Google Fonts: Plus Jakarta Sans & IBM Plex Mono --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
     {{-- Bootstrap 5.3 & Bootstrap Icons via CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-    {{-- CSS Kustom Ramah Lansia --}}
+    {{-- CSS Kustom --}}
     <link href="{{ asset('css/warung.css') }}" rel="stylesheet">
 </head>
 <body>
-    <header class="warung-header shadow-sm">
-        <div class="container py-3">
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-2 mb-3">
-                <a href="{{ route('penjualan.create') }}" class="text-decoration-none d-flex align-items-center gap-3">
-                    <span class="warung-logo-badge" aria-hidden="true">
-                        <i class="bi bi-shop-window"></i>
-                    </span>
-                    <div>
-                        <h1 class="h3 mb-0 fw-bold text-white">Warung Gultik Nusantara</h1>
-                        <p class="mb-0 warung-subtitle">Sistem Pencatatan Penjualan &amp; Keuangan Harian</p>
-                    </div>
-                </a>
-                <div class="warung-date-pill">
-                    <i class="bi bi-calendar3 me-2" aria-hidden="true"></i>
-                    {{ now()->translatedFormat('l, d F Y') }}
-                </div>
-            </div>
+    @php
+        $isJualan = request()->routeIs('penjualan.create');
+        $isKas = request()->routeIs('kas.*', 'pengeluaran.*', 'pemasukan.*');
+        $isRekap = request()->routeIs('laporan.*');
+        $isRiwayat = request()->routeIs('penjualan.index', 'penjualan.edit');
+    @endphp
 
-            {{-- Navigasi Utama Selalu Terlihat (Tanpa Menu Tersembunyi) --}}
-            <nav aria-label="Menu Utama">
-                <div class="warung-nav-grid">
-                    <a href="{{ route('penjualan.create') }}"
-                       class="warung-nav-btn {{ request()->routeIs('penjualan.create') ? 'is-active' : '' }}">
-                        <i class="bi bi-plus-circle-fill" aria-hidden="true"></i>
-                        <span>Catat Penjualan</span>
-                    </a>
-                    <a href="{{ route('pengeluaran.index') }}"
-                       class="warung-nav-btn {{ request()->routeIs('pengeluaran.*', 'pemasukan.*') ? 'is-active' : '' }}">
-                        <i class="bi bi-wallet2" aria-hidden="true"></i>
-                        <span>Masuk &amp; Keluar</span>
-                    </a>
-                    <a href="{{ route('laporan.rekap-penjualan') }}"
-                       class="warung-nav-btn {{ request()->routeIs('laporan.rekap-penjualan') ? 'is-active' : '' }}">
-                        <i class="bi bi-bar-chart-fill" aria-hidden="true"></i>
-                        <span>Rekap Penjualan</span>
-                    </a>
-                    <a href="{{ route('laporan.keuangan') }}"
-                       class="warung-nav-btn {{ request()->routeIs('laporan.keuangan') ? 'is-active' : '' }}">
-                        <i class="bi bi-journal-text" aria-hidden="true"></i>
-                        <span>Laporan Keuangan</span>
-                    </a>
-                    <a href="{{ route('penjualan.index') }}"
-                       class="warung-nav-btn {{ request()->routeIs('penjualan.index', 'penjualan.edit') ? 'is-active' : '' }}">
-                        <i class="bi bi-clock-history" aria-hidden="true"></i>
-                        <span>Riwayat Penjualan</span>
-                    </a>
-                </div>
+    {{-- Top Bar Sticky --}}
+    <header class="warung-topbar">
+        <div class="container container-warung h-100 px-3 px-sm-4 d-flex align-items-center justify-content-between gap-4">
+            <a href="{{ route('penjualan.create') }}" class="warung-brand d-inline-flex align-items-center gap-2">
+                <i class="bi bi-shop fs-5" aria-hidden="true"></i>
+                <span>Warung Gultik Nusantara</span>
+            </a>
+
+            <nav aria-label="Navigasi Utama Desktop" class="d-none d-lg-flex align-items-center gap-4">
+                <a href="{{ route('penjualan.create') }}"
+                   aria-current="{{ $isJualan ? 'page' : 'false' }}"
+                   class="warung-desktop-link {{ $isJualan ? 'is-active' : '' }}">
+                    Catat Penjualan
+                </a>
+                <a href="{{ route('kas.index') }}"
+                   aria-current="{{ $isKas ? 'page' : 'false' }}"
+                   class="warung-desktop-link {{ $isKas ? 'is-active' : '' }}">
+                    Pemasukan &amp; Keluar
+                </a>
+                <a href="{{ route('laporan.rekap') }}"
+                   aria-current="{{ $isRekap ? 'page' : 'false' }}"
+                   class="warung-desktop-link {{ $isRekap ? 'is-active' : '' }}">
+                    Rekap &amp; Keuangan
+                </a>
+                <a href="{{ route('penjualan.index') }}"
+                   aria-current="{{ $isRiwayat ? 'page' : 'false' }}"
+                   class="warung-desktop-link {{ $isRiwayat ? 'is-active' : '' }}">
+                    Riwayat Penjualan
+                </a>
             </nav>
+
+            <div class="d-none d-lg-flex align-items-center">
+                <a href="{{ route('laporan.rekap') }}" class="btn-rekap-topbar">
+                    Rekap Hari Ini
+                </a>
+            </div>
         </div>
     </header>
 
-    <main class="container py-4">
-        @include('partials.alert')
-        @yield('content')
-    </main>
+    {{-- Konten Utama --}}
+    <main id="utama" class="container container-warung px-3 px-sm-4 pt-3 pt-sm-4">
+        <div class="mb-3 mb-sm-4">
+            <h1 class="h4 h3-sm fw-bold mb-1" style="font-weight: 800;">
+                Sistem Pencatatan Penjualan dan Keuangan Warung Gultik Nusantara
+            </h1>
+            <p class="mb-0 fw-medium" style="color: var(--warung-muted); font-size: 0.95rem;">
+                Hari ini: {{ now()->translatedFormat('d M Y') }} &middot; Tombol besar &amp; mudah dibaca
+            </p>
+        </div>
 
-    <footer class="container pb-4 pt-2 text-center text-muted small">
-        <hr class="mb-3">
-        <span>Sistem Pencatatan Warung Gultik Nusantara &bull; Mode Kasir &amp; Pembukuan Sederhana</span>
-    </footer>
+        {{-- Notifikasi Global (mis. dari Sidebar Demo/Reset atau Update/Hapus) --}}
+        @if (session('success') && ! session('form_feedback'))
+            <div role="status" class="warung-alert-success d-flex align-items-center justify-content-between gap-3 mb-4">
+                <span>{{ session('success') }}</span>
+                <a href="{{ url()->current() }}" class="btn btn-sm bg-white border border-success-subtle fw-bold text-success text-decoration-none px-3 py-2 rounded-3">
+                    Tutup
+                </a>
+            </div>
+        @endif
 
-    {{-- Modal Konfirmasi Hapus Ramah Lansia --}}
-    <div class="modal fade" id="modalKonfirmasiHapus" tabindex="-1" aria-labelledby="modalKonfirmasiHapusLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-2 border-danger">
-                <div class="modal-header bg-danger text-white">
-                    <h2 class="modal-title h4 fw-bold" id="modalKonfirmasiHapusLabel">
-                        <i class="bi bi-exclamation-triangle-fill me-2" aria-hidden="true"></i>
-                        Konfirmasi Hapus Data
-                    </h2>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <p class="fs-5 mb-2">Apakah Anda yakin ingin menghapus catatan berikut?</p>
-                    <p class="fs-5 fw-bold text-danger mb-0" id="modalKonfirmasiHapusDetail"></p>
-                </div>
-                <div class="modal-footer p-3 d-flex gap-2 justify-content-between">
-                    <button type="button" class="btn btn-outline-secondary btn-lg flex-fill" data-bs-dismiss="modal">
-                        Batal
-                    </button>
-                    <form id="formKonfirmasiHapus" method="POST" action="" class="flex-fill">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-lg w-100 fw-bold">
-                            <i class="bi bi-trash-fill me-1" aria-hidden="true"></i>
-                            Ya, Hapus
-                        </button>
-                    </form>
-                </div>
+        <div class="row g-4 align-items-start">
+            <div class="col-12 col-lg-7 col-xl-8">
+                @yield('content')
+            </div>
+            <div class="col-12 col-lg-5 col-xl-4">
+                @include('partials.ringkasan-samping')
             </div>
         </div>
-    </div>
+    </main>
+
+    {{-- Navigasi Bawah Mobile (4 Menu: Jualan, Catat Kas, Rekap, Riwayat) --}}
+    <nav aria-label="Navigasi Bawah Mobile" class="d-lg-none warung-bottom-nav">
+        <div class="warung-bottom-grid">
+            <a href="{{ route('penjualan.create') }}"
+               aria-current="{{ $isJualan ? 'page' : 'false' }}"
+               class="warung-bottom-link {{ $isJualan ? 'is-active' : '' }}">
+                <i class="bi bi-plus-circle" aria-hidden="true"></i>
+                <span>Jualan</span>
+            </a>
+
+            <a href="{{ route('kas.index') }}"
+               aria-current="{{ $isKas ? 'page' : 'false' }}"
+               class="warung-bottom-link {{ $isKas ? 'is-active' : '' }}">
+                <i class="bi bi-wallet2" aria-hidden="true"></i>
+                <span>Catat Kas</span>
+            </a>
+
+            <a href="{{ route('laporan.rekap') }}"
+               aria-current="{{ $isRekap ? 'page' : 'false' }}"
+               class="warung-bottom-link {{ $isRekap ? 'is-active' : '' }}">
+                <i class="bi bi-bar-chart" aria-hidden="true"></i>
+                <span>Rekap</span>
+            </a>
+
+            <a href="{{ route('penjualan.index') }}"
+               aria-current="{{ $isRiwayat ? 'page' : 'false' }}"
+               class="warung-bottom-link {{ $isRiwayat ? 'is-active' : '' }}">
+                <i class="bi bi-clipboard-check" aria-hidden="true"></i>
+                <span>Riwayat</span>
+            </a>
+        </div>
+    </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ asset('js/warung.js') }}"></script>
